@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiyou100.dao.UserDao">
+    <resultMap id="userMap" type="com.zhiyou100.pojo.User">
+        <!--主键id-->
+        <id property="id" column="user_id"></id>
+        <result property="" column="" ></result>
+        <result property="" column="" ></result>
+        <result property="" column="" ></result>
+        <association property=""></association>
+        <collection property="roles" javaType="list" ofType="com.zhiyou100.pojo.Role">
+            <id property="id" column="role_id"></id>
+            <result property="roleName" column="role_name"></result>
+            <result property="pId" column=""
+
+        </collection>
+    </resultMap>
+    <!--<select id="findAllUser" parameterType="string">-->
+
+    <!--</select>-->
+    <select id="findUserByName" parameterType="String" resultType="com.zhiyou100.pojo.User">
+        select * from user where username = #{username}
+    </select>
+    <select id="findPermission" parameterType="String" resultType="com.zhiyou100.pojo.Permission">
+        select resources_url resourceUrl from permission where p_id in
+         (select p_id from role where role_id in (select role_id from user where username=#{username}))
+    </select>
+</mapper>

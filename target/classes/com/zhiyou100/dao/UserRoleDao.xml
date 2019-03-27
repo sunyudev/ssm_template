@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiyou100.dao.UserRoleDao">
+
+    <update id="updateUserMsg" parameterType="user">
+        update user u,user_role ur
+        <set>
+            <if test="userName!=null"> u.user_name = #{userName}</if>
+            <if test="password!=null">,u.password= #{password}</if>
+            <if test="realName!=null">,u.real_name = #{realName}</if>
+            <if test="email!=null">,u.email = #{email}</if>
+            <if test="status!=null">,u.status= #{status}</if>
+            <if test="updateTime!=null">,u.update_time=#{updateTime}</if>
+            <if test="roleId!=null">,ur.role_id= #{roleId}</if>
+        </set>
+        where u.id = #{id} and ur.user_id=u.id
+    </update>
+    <insert id="addUserAndRole" parameterType="userRole">
+        insert into user_role (user_id,role_id)
+        values (#{userId},#{roleId})
+    </insert>
+</mapper>

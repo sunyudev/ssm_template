@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiyou100.dao.UserDao">
+
+    <resultMap type="user" id="userMap">
+        <id property="id" column="uid"></id>
+        <result property="userName" column="uname"/>
+        <result property="password" column="upwd"/>
+        <result property="realName" column="realname"/>
+        <result property="status" column="ustatus"/>
+        <result property="email" column="uemail"/>
+
+        <collection property="roles" ofType="role">
+            <id property="id" column="rid"></id>
+            <result property="roleName" column="rname"/>
+            <result property="roleNum" column="rnum"/>
+            <result property="statuss" column="rstatus"/>
+        </collection>
+
+        <collection property="permissions" ofType="permission">
+            <id property="id" column="pid"></id>
+            <result property="resourceName" column="pname"/>
+            <result property="resourceUrl" column="purl"/>
+        </collection>
+    </resultMap>
+
+    <select id="findUserByName" parameterType="String" resultMap="userMap">
+			select u.id uid,u.user_name uname,u.`password` upwd,
+			u.real_name realname,u.status ustatus,u.email uemail,
+			r.id rid,r.role_name rname,r.role_num rnum,r.statuss rstatus,
+			p.id pid,p.resource_name pname,p.resource_url purl
+			from user u
+			inner join user_role ur on ur.user_id=u.id
+			inner join role r on ur.role_id = r.id
+			inner join role_permission rp on rp.role_id=r.id
+			inner join permission p on rp.permission_id =p.id
+			where u.user_name=#{userName} and u.del = 1 and u.status = 1 and p.status = 1
+	</select>
+
+    <select id="findAllUser"  resultMap="userMap">
+			select u.id uid,u.user_name uname,u.`password` upwd,u.real_name realname,
+			r.id rid,r.role_name rname
+			from user u
+			inner join user_role ur on ur.user_id=u.id
+			inner join role r on ur.role_id = r.id
+			where  u.del = 1 and u.status = 1
+        <if test="userName!=null">
+
+        </if>
+	</select>
+
+    <select id="findUserCount" resultType="integer">
+		select count(*) from user where  del = 1 and status = 1
+	</select>
+
+    <update id="delUser" parameterType="int">
+		update user set del = 0
+		where id = #{id}
+	</update>
+
+    <select id="findIdByName" parameterType="user" resultType="integer">
+		select id from user where user_name = #{userName}
+	</select>
+
+    <insert id="addUser" parameterType="user">
+		insert into user(user_name,password,status,real_name,email)
+		values(#{userName},#{password},#{status},#{realName},#{email})
+	</insert>
+
+    <select id="vagueFindUser" parameterType="user" resultMap="userMap">
+        select u.id uid,u.user_name uname,u.`password` upwd,
+        u.real_name realname,u.status ustatus,u.email uemail,
+        r.id rid,r.role_name rname,r.role_num rnum
+        from user u
+        inner join user_role ur on ur.user_id=u.id
+        inner join role r on ur.role_id = r.id
+        where u.user_name like concat(concat('%',#{userName}),'%')
+
+        and u.del = 1 and u.status = 1
+    </select>
+</mapper>
